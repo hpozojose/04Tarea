@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import numpy as np
-class Planeta(object):
-
 G=1
 M=1
+class Planeta(object):
+
+
     '''
     La clase planeta contiene funciones para integrar el potencial usando Euler,
     Runge-Kutta y Verlet, tambien se calcular con esta clase la energia de un
@@ -20,7 +21,7 @@ M=1
         '''
 
         self.y_anterior = np.array([])
-        self.y_actual = condicion_inicial
+        self.y_actual = np.array(condicion_inicial)
         self.t_actual = 0.
         self.alpha = alpha
         self.m = masa
@@ -32,13 +33,15 @@ M=1
         '''
         x, y, vx, vy = self.y_actual
         radio = np.sqrt(x**2 + y**2)
+        a=self.alpha
         cos_r = x/radio
         sen_r = y/radio
-        a = G * M * ((2*self.alpha/(radio**3)) - 1/(radio**2))
-        fx = cos_r * a
-        fy = sen_r * a
+        f = G * M * ((2.*a/(radio**4)) - 1/(radio**3))
+        fx = x*f
+        fy = y*f
 
-        return [vx, vy, fx, fy]
+
+        return np.array([vx, vy, fx, fy])
 
     def avanza_euler(self, dt):
         '''
@@ -46,10 +49,9 @@ M=1
         en un intervalo de tiempo dt usando el método de Euler explícito. El
         método no retorna nada, pero re-setea los valores de self.y_actual.
         '''
-        y_init = self.y_actual
-        der_y_init = self.ecuacion_de_movimiento()
-        self.y_anterior = y_init
-        self.y_actual = y_init + dt * der_y_init
+
+        self.y_anterior = self.y_actual
+        self.y_actual = self.y_anterior + dt * (self.ecuacion_de_movimiento())
         self.t_actual += dt
         pass
 
@@ -77,11 +79,13 @@ M=1
         '''
         y_init = self.y_actual
         der_y_n = self.ecuacion_de_movimiento()
-        y_n1 = 2*self.y_actual[0:2] - self.y_anterior[0:2] + (dt**2)*der_y_n[2:]
-        dy_n1 = (y_n1 - self.y_actual[0:2])/dt
+        x_n1 = 2*self.y_actual[0] - self.y_anterior[0] + (dt**2)*der_y_n[2]
+        y_n1 = 2*self.y_actual[1] - self.y_anterior[1] + (dt**2)*der_y_n[3]
+        dx_n1 = (x_n1 - self.y_actual[0])/dt
+        dy_n1 = (y_n1 - self.y_actual[1])/dt
 
         self.y_anterior = y_init
-        self.y_actual = np.concatenate((y_n1,dy_n1))
+        self.y_actual = np.concatenate((x_n1 ,y_n1 ,dx_n1 ,dy_n1))
         self.t_actual += dt
 
         pass
@@ -90,10 +94,8 @@ M=1
         '''
         Calcula la enérgía total del sistema en las condiciones actuales.
         '''
-        x, y, vx, vy = self.y_actual
-        radio = np.sqrt(x**2 + y**2)
-        U = - G * M * self.m/radio  + (self.alpha * G * M * self.m /(radio**2))
-        K = (vx**2 + vt**2) * self.m/2.
-        Energia = K + U
-
-        return Energia
+        Y = self.y_actual
+        r = np.sqrt(Y[0]**2 + Y[1]**2)
+        K = (Y[2]**2 + Y[3]**2)/2.
+        U = -G*M*(1/r + self.alpha/r**2)
+        return (K + U)*self.m
