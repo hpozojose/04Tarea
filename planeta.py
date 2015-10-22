@@ -79,10 +79,10 @@ class Planeta(object):
         '''
         y_init = self.y_actual
         der_y_n = self.ecuacion_de_movimiento()
-        x_n1 = 2*self.y_actual[0] - self.y_anterior[0] + (dt**2)*der_y_n[2]
-        y_n1 = 2*self.y_actual[1] - self.y_anterior[1] + (dt**2)*der_y_n[3]
-        dx_n1 = (x_n1 - self.y_actual[0])/dt
-        dy_n1 = (y_n1 - self.y_actual[1])/dt
+        x_n1 = 2*y_init[0] - y_anterior[0] + (dt**2)*der_y_n[2]
+        y_n1 = 2*y_init[1] - y_anterior[1] + (dt**2)*der_y_n[3]
+        dx_n1 = (x_n1 - y_init[0])/dt
+        dy_n1 = (y_n1 - y_init[1])/dt
 
         self.y_anterior = y_init
         self.y_actual = np.concatenate((x_n1 ,y_n1 ,dx_n1 ,dy_n1))

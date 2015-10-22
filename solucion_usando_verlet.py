@@ -17,11 +17,16 @@ pasos=10000
 t_values = np.array(range(pasos))*dt
 
 for i in range(pasos):
-    x_value.append(Jupiter.y_actual[0])
-    y_value.append(Jupiter.y_actual[1])
-    E.append(Jupiter.energia_total())
-    Jupiter.avanza_verlet(dt)
-
+    if i==0:
+        x_value.append(Jupiter.y_actual[0])
+        y_value.append(Jupiter.y_actual[1])
+        E.append(Jupiter.energia_total())
+        Jupiter.avanza_rk4(dt)
+    else:
+        x_value.append(Jupiter.y_actual[0])
+        y_value.append(Jupiter.y_actual[1])
+        E.append(Jupiter.energia_total())
+        Jupiter.avanza_verlet(dt)
 
 x_value = np.array(x_value)
 y_value = np.array(y_value)

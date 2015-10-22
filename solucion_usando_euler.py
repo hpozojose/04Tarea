@@ -12,7 +12,7 @@ condicion_inicial = [10, 0, 0, 0.3]
 
 Jupiter = Planeta(condicion_inicial)
 
-t_final =  3000.
+t_final =  1025.
 numero_pasos = 10000
 dt= t_final / (float)(numero_pasos)
 t_values = np.linspace(0,t_final,numero_pasos)
